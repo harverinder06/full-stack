@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management UI - Dark Mode</title>
+    <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.20.15/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body className="bg-gray-900 text-white">
+    <div id="root"></div>
+    <script type="text/babel">
+        // Book Component to display individual book details
+        function Book({ title, author, onRemove }) {
+            return (
+                <div className="flex justify-between items-center p-4 bg-gray-800 rounded shadow mb-2">
+                    <div>
+                        <h3 className="text-lg font-semibold text-white">{title}</h3>
+                        <p className="text-gray-400">by {author}</p>
+                    </div>
+                    <button
+                        onClick={onRemove}
+                        className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                    >
+                        Remove
+                    </button>
+                </div>
+            );
+        }
+
+        // Main App Component
+        function App() {
+            const [books, setBooks] = React.useState([
+                { id: 1, title: "The Great Gatsby", author: "F. Scott Fitzgerald" },
+                { id: 2, title: "To Kill a Mockingbird", author: "Harper Lee" },
+                { id: 3, title: "1984", author: "George Orwell" }
+            ]);
+            const [searchQuery, setSearchQuery] = React.useState("");
+            const [newTitle, setNewTitle] = React.useState("");
+            const [newAuthor, setNewAuthor] = React.useState("");
+
+            // Handle search input
+            const handleSearch = (event) => {
+                setSearchQuery(event.target.value);
+            };
+
+            // Filter books based on search query
+            const filteredBooks = books.filter(book =>
+                book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                book.author.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+
+            // Handle adding a new book
+            const handleAddBook = () => {
+                if (newTitle.trim() && newAuthor.trim()) {
+                    const newBook = {
+                        id: books.length ? Math.max(...books.map(b => b.id)) + 1 : 1,
+                        title: newTitle,
+                        author: newAuthor
+                    };
+                    setBooks([...books, newBook]);
+                    setNewTitle("");
+                    setNewAuthor("");
+                }
+            };
+
+            // Handle removing a book
+            const handleRemoveBook = (id) => {
+                setBooks(books.filter(book => book.id !== id));
+            };
+
+            return (
+                <div className="max-w-2xl mx-auto p-6">
+                    <h1 className="text-2xl font-bold mb-4 text-center text-white">Library Management</h1>
+                    
+                    {/* Search Input */}
+                    <div className="mb-4">
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={handleSearch}
+                            placeholder="Search by title or author..."
+                            className="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+                    
+                    {/* Add Book Form */}
+                    <div className="mb-6 p-4 bg-gray-800 rounded shadow">
+                        <h2 className="text-lg font-semibold mb-2 text-white">Add New Book</h2>
+                        <div className="flex flex-col gap-2">
+                            <input
+                                type="text"
+                                value={newTitle}
+                                onChange={(e) => setNewTitle(e.target.value)}
+                                placeholder="Book Title"
+                                className="p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <input
+                                type="text"
+                                value={newAuthor}
+                                onChange={(e) => setNewAuthor(e.target.value)}
+                                placeholder="Author"
+                                className="p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <button
+                                onClick={handleAddBook}
+                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                            >
+                                Add Book
+                            </button>
+                        </div>
+                    </div>
+                    
+                    {/* Book List */}
+                    <div>
+                        <h2 className="text-lg font-semibold mb-2 text-white">Books</h2>
+                        {filteredBooks.length > 0 ? (
+                            filteredBooks.map(book => (
+                                <Book
+                                    key={book.id}
+                                    title={book.title}
+                                    author={book.author}
+                                    onRemove={() => handleRemoveBook(book.id)}
+                                />
+                            ))
+                        ) : (
+                            <p className="text-gray-400">No books found.</p>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        // Render the App
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
