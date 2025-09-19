@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Person Class Hierarchy</title>
+</head>
+<body>
+    <h1>Person Class Hierarchy Demo</h1>
+    <p>Check the console for output (Right-click -> Inspect -> Console).</p>
+    <script>
+        // Base Person class
+        class Person {
+            constructor(name, age) {
+                this.name = name;
+                this.age = age;
+            }
+
+            // Method to display basic information
+            displayInfo() {
+                return `Name: ${this.name}, Age: ${this.age}`;
+            }
+        }
+
+        // Student subclass extending Person
+        class Student extends Person {
+            constructor(name, age, grade) {
+                super(name, age); // Call the parent class constructor
+                this.grade = grade;
+            }
+
+            // Override displayInfo to include grade
+            displayInfo() {
+                return `${super.displayInfo()}, Grade: ${this.grade}`;
+            }
+        }
+
+        // Teacher subclass extending Person
+        class Teacher extends Person {
+            constructor(name, age, subject) {
+                super(name, age); // Call the parent class constructor
+                this.subject = subject;
+            }
+
+            // Override displayInfo to include subject
+            displayInfo() {
+                return `${super.displayInfo()}, Subject: ${this.subject}`;
+            }
+        }
+
+        // Demonstrate the class hierarchy
+        function demonstrateHierarchy() {
+            // Create instances
+            const student1 = new Student("Ashish", 20, "A");
+            const student2 = new Student("Smaran", 19, "B+");
+            const teacher1 = new Teacher("Vaibhav", 35, "Mathematics");
+            const teacher2 = new Teacher("Priya", 42, "English");
+
+            // Display information
+            console.log("=== Student Details ===");
+            console.log(student1.displayInfo()); // Output: Name: Ashish, Age: 20, Grade: A
+            console.log(student2.displayInfo()); // Output: Name: Smaran, Age: 19, Grade: B+
+            console.log("\n=== Teacher Details ===");
+            console.log(teacher1.displayInfo()); // Output: Name: Vaibhav, Age: 35, Subject: Mathematics
+            console.log(teacher2.displayInfo()); // Output: Name: Priya, Age: 42, Subject: English
+        }
+
+        // Run the demonstration
+        demonstrateHierarchy();
+    </script>
+</body>
+</html>
