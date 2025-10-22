@@ -1,0 +1,104 @@
+server.js :
+// Import dependencies
+const mongoose = require("mongoose");
+
+// Connect to MongoDB
+mongoose.connect("mongodb://127.0.0.1:27017/ecommerceDB", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log("MongoDB connected"))
+.catch(err => console.log(err));
+
+// -------------------
+// Define Product Schema
+// -------------------
+const variantSchema = new mongoose.Schema({
+    color: { type: String, required: true },
+    size: { type: String, required: true },
+    stock: { type: Number, required: true, min: 0 }
+});
+
+const productSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    price: { type: Number, required: true, min: 0 },
+    category: { type: String, required: true },
+    variants: [variantSchema] // Nested array of variants
+});
+
+const Product = mongoose.model("Product", productSchema);
+
+// -------------------
+// Insert Sample Data
+// -------------------
+async function insertSampleProducts() {
+    await Product.deleteMany({}); // Clear existing data
+
+    const products = [
+        {
+            name: "T-Shirt",
+            price: 500,
+            category: "Apparel",
+            variants: [
+                { color: "Red", size: "M", stock: 10 },
+                { color: "Blue", size: "L", stock: 5 }
+            ]
+        },
+        {
+            name: "Sneakers",
+            price: 3000,
+            category: "Footwear",
+            variants: [
+                { color: "White", size: "9", stock: 20 },
+                { color: "Black", size: "10", stock: 15 }
+            ]
+        },
+        {
+            name: "Jeans",
+            price: 1200,
+            category: "Apparel",
+            variants: [
+                { color: "Blue", size: "32", stock: 8 },
+                { color: "Black", size: "34", stock: 12 }
+            ]
+        }
+    ];
+
+    await Product.insertMany(products);
+    console.log("Sample products inserted");
+}
+
+// -------------------
+// Queries
+// -------------------
+async function runQueries() {
+    // 1. Retrieve all products
+    const allProducts = await Product.find();
+    console.log("All Products:", allProducts);
+
+    // 2. Filter products by category 'Apparel'
+    const apparelProducts = await Product.find({ category: "Apparel" });
+    console.log("Apparel Products:", apparelProducts);
+
+    // 3. Project only variant details (color & stock)
+    const variantProjection = await Product.find(
+        {},
+        { name: 1, variants: { color: 1, stock: 1, _id: 0 } }
+    );
+    console.log("Products with Variant Details:", variantProjection);
+
+    // 4. Access nested variant of a specific product
+    const tshirt = await Product.findOne({ name: "T-Shirt" });
+    console.log("T-Shirt Variants:", tshirt.variants);
+}
+
+// -------------------
+// Execute
+// -------------------
+async function main() {
+    await insertSampleProducts();
+    await runQueries();
+    mongoose.connection.close();
+}
+
+main();
